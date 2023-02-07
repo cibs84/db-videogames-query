@@ -118,7 +118,8 @@ join pegi_labels pl on plv.pegi_label_id = pl.id
 join reviews r on r.videogame_id = v.id
 where r.rating >= 4
 
--- 7- Selezionare quali giochi erano presenti nei tornei nei quali hanno partecipato i giocatori il cui nome inizia per 'S' (474)
+-- 7- Selezionare quali giochi erano presenti nei tornei nei quali hanno partecipato i giocatori il cui 
+nome inizia per 'S' (474)
 select distinct v.id from videogames v 
 join tournament_videogame tv on tv.videogame_id = v.id 
 join tournaments t on t.id = tv.tournament_id 
@@ -146,3 +147,29 @@ join videogames v on v.id = tv.videogame_id
 join award_videogame av on av.videogame_id = v.id 
 join awards a on a.id = av.award_id 
 where av.year = 2018 and a.name LIKE "Gioco più atteso" and t.`year` = 2019
+
+-- 10- Selezionare i dati della prima software house che ha rilasciato un gioco, assieme ai dati del gioco stesso (software house id : 5)
+
+select v.release_date, sh.*, v.* from software_houses sh 
+join videogames v on v.software_house_id = sh.id
+order by v.release_date
+limit 1
+
+-- 11- Selezionare i dati del videogame (id, name, release_date, totale recensioni) con più recensioni (videogame id : potrebbe uscire 449 o 398, sono entrambi a 20)
+
+select v.id, v.name, v.release_date, count(r.id) as 'Totale Recensioni' from videogames v 
+join reviews r on r.videogame_id = v.id
+group by v.id
+ORDER BY count(r.id) desc
+limit 1
+
+-- 12- Selezionare la software house che ha vinto più premi tra il 2015 e il 2016 (software house id : potrebbe uscire 3 o 1, sono entrambi a 3)
+
+select sh.id, count(a.id) as 'Nr. Premi tra il 2015 e il 2016' from software_houses sh 
+join videogames v on v.software_house_id = sh.id 
+join award_videogame av on av.videogame_id = v.id 
+join awards a on a.id = av.award_id 
+where av.`year` between 2015 and 2016
+group by sh.id 
+order by count(a.id) desc
+limit 1
